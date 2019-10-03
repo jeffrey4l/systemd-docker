@@ -1,0 +1,14 @@
+---
+_meta:
+  runtime: docker
+name: centos
+image: centos:7
+detach: false
+tty: false
+init: true
+rm: true
+command:
+  - sleep
+  - 100
+volumes:
+  - /etc/localtime:/etc/localtime:ro
