@@ -1,31 +1,71 @@
 package container
 
-import "github.com/jeffrey4l/systemd-docker/common"
+import (
+	"fmt"
+	"strings"
 
-func GenCmd(binary string, c *common.Context) []string {
-	cmd := []string{binary}
-	cmd = append(cmd, "run")
-	cmd = append(cmd, "--name", c.Name)
+	"github.com/jeffrey4l/systemd-docker/common"
+)
+
+type Cmd struct {
+	Binary string
+	Cmd    []string
+}
+
+func NewCmd(binary string) *Cmd {
+	return &Cmd{Binary: binary, Cmd: []string{binary}}
+}
+
+func (c *Cmd) AddSimple(args ...string) *Cmd {
+	c.Cmd = append(c.Cmd, args...)
+	return c
+}
+
+func (c *Cmd) AddPair(name string, value ...string) *Cmd {
+	for _, v := range value {
+		c.Cmd = append(c.Cmd, name, v)
+	}
+	return c
+}
+
+func (c Cmd) String() string {
+	var wrapped []string
+	for _, v := range c.Cmd {
+		if strings.Contains(v, " ") {
+			v = fmt.Sprintf(`"%s"`, v)
+		}
+		wrapped = append(wrapped, v)
+	}
+	return strings.Join(wrapped, " ")
+}
+
+func JoinArry(arg string, values []string) []string {
+	cmd := []string{}
+	for _, v := range values {
+		cmd = append(cmd, arg, v)
+	}
+	return cmd
+}
+
+func GenCmd(binary string, c *common.Context) *Cmd {
+	cmd := NewCmd(binary)
+	cmd.AddSimple("run", "--name", c.Name)
 	if c.TTY {
-		cmd = append(cmd, "--tty")
+		cmd.AddSimple("--tty")
 	}
 	if c.Detach {
-		cmd = append(cmd, "--detach")
+		cmd.AddSimple("--detach")
 	}
 	if c.Init {
-		cmd = append(cmd, "--init")
+		cmd.AddSimple("--init")
 	}
 	if c.Rm {
-		cmd = append(cmd, "--rm")
+		cmd.AddSimple("--rm")
 	}
-	for _, v := range c.Volumes {
-		cmd = append(cmd, "--volume", v)
-	}
-	// add image name
-	cmd = append(cmd, c.Image)
-	// at last, append the command
-	for _, v := range c.Command {
-		cmd = append(cmd, v)
-	}
+	cmd.AddPair("--volume", c.Volume...)
+	cmd.AddPair("--env", c.Env...)
+
+	cmd.AddSimple(c.Image)
+	cmd.AddSimple(c.Command...)
 	return cmd
 }

@@ -10,5 +10,7 @@ rm: true
 command:
   - sleep
   - 100
-volumes:
+volume:
   - /etc/localtime:/etc/localtime:ro
+env:
+  - A=B

@@ -56,10 +56,10 @@ func RunContainerAction(c *cli.Context) error {
 	}
 
 	r := container.NewContainerRuntime(&ctx)
-	log.Debugf("Start run container %s", r)
+	log.Debugf("Start run container: %s", r.Name())
 
 	if c.Bool("print") {
-		log.Infof("Dry run command: %s", r.GenCmd())
+		fmt.Printf("%s\n", r.GenCmd())
 		return nil
 	} else {
 		return r.Run()

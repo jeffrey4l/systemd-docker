@@ -9,9 +9,10 @@ type Context struct {
 	Name    string   `yaml:"name"`
 	Image   string   `yaml:"image"`
 	Command []string `yaml:"command"`
-	Volumes []string `yaml:"volumes"`
+	Volume  []string `yaml:"volume"`
 	Detach  bool     `yaml:"detach"`
 	TTY     bool     `yaml:"tty"`
 	Init    bool     `yaml:"init"`
 	Rm      bool     `yaml:"rm"`
+	Env     []string `yaml:"env"`
 }
