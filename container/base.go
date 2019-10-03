@@ -12,7 +12,7 @@ import (
 )
 
 type Container interface {
-	//Exists() bool
+	Exists() bool
 	Run() error
 	GenCmd() *Cmd
 	Stop(int) error
